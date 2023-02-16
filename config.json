@@ -1,0 +1,29 @@
+{
+  "key": "5987999877:AAE_q3ADwNSH4cWeBBFtFWKyiC4oOLH-i58",
+  
+  "greetings": [
+	  "Hi, my name is Phoebe, i'm here to help you to download YouTube Music",
+	  "Hello! It's me Phoebe, let's get some music, from YouTube!",
+	  "Hey, there, It's Phoebe time, give me yt link, i'll give you music!"
+  ], 
+
+  "err_msgs": {
+  	"invalidURL": "I'm sorry, something's wrong with the URL"
+  },
+
+  "help_mesg": "Hi, my name is Phoebe, to say hey, /start or /hello \\n or you could just paste the URLs to download music",
+
+  "download_config": {
+  	"format": "bestaudio/best",
+	"addmetadata": true,
+	"writethumbnail": true,
+	"postprocessors": [
+	  {
+	    "key": "FFmpegExtractAudio",
+	    "preferredcodec": "mp3"
+	  }
+	]
+  },
+
+  "cache": "./cache"
+}

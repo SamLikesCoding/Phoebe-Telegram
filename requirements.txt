@@ -1,0 +1,4 @@
+yt-dlp
+pyTelegramBotAPI
+validators
+eyed3
