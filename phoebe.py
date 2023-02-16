@@ -13,7 +13,6 @@ from telebot import TeleBot as tbot
 from random import choice, randint
 import logging as lgr
 import validators
-import asyncio
 import shutil
 import string
 import yt_dlp
@@ -67,31 +66,39 @@ def response(message):
         lgr.info("Not a good URL!")
         pbot.reply_to(message, err_mesg["invalidURL"])
         pbot.reply_to(message, "/help for instructions")   
+
     else:
-        
+
+        # Create Directories for session
         session_path = path.join(cache_path, randomizer())
         makedirs(session_path)
         
+        # First step : Filename
         dl_configs["outtmpl"] = path.join(session_path, "%(title)s.%(ext)s")
         pbot.reply_to(message, "Download request processing...")
         
+        # Downloading using yt-dlp
         with yt_dlp.YoutubeDL(dl_configs) as dlr:
             rsp_info = dlr.extract_info(message.text)
         
+        # Logging it
         lgr.info("ExeCode : "+ ("Success" if rsp_info else "Fail" ))
         
-        send_targets = tuple(
-            path.join(session_path, fname) for fname in listdir(session_path) 
-            if path.isfile(path.join(session_path, fname))
-        )
+        # Labelling files for tagging
+        send_targets = {}
+        for fname in listdir(session_path):
+            sessFile = path.join(session_path, fname)
+            if path.isfile(sessFile):
+                sessFileType = "musicFile" if fname.endswith(".mp3") else "thumbnail"
+                send_targets[sessFileType] = sessFile
+        music_file = send_targets["musicFile"]
+        img_file = send_targets["thumbnail"]
         
-        music_file = send_targets[1]
-        img_file = send_targets[0]
-        
-        
+        # Thumbnail for tag
         with open(img_file, "rb") as imgb:
             img_bin = imgb.read()
         
+        # The Tagging process
         try:
             audioObject = eyed3.load(music_file)
             if audioObject:
@@ -107,7 +114,10 @@ def response(message):
         except IOError:
             lgr.error("Cant open the file")
         finally:
+            # The finale step : Sending it!
             pbot.send_document(message.chat.id, InputFile(music_file))
+        
+        # Clearing caches, because limited memory!
         shutil.rmtree(session_path)
         lgr.info("Request Complete!")
 
